@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -152,13 +151,23 @@ public class MainActivity extends BaseActivity
         int size = notifications.size();
         MenuItem menuItem = menu.findItem(R.id.action_notification);
         if (size == 0)
-            menuItem.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_notifications_none_white_24dp));
-        else
             menuItem.setIcon(
                     new IconTextDrawable(
-                            MainActivity.this, String.valueOf(size), R.drawable.ic_notifications_white_24dp
+                            MainActivity.this, null,
+                            R.drawable.ic_notifications_none_white_24dp,
+                            0,0
+
+                    )
+            );        else {
+            menuItem.setIcon(
+                    new IconTextDrawable(
+                            MainActivity.this, String.valueOf(size),
+                            R.drawable.ic_notifications_white_24dp,
+                            0,0
+
                     )
             );
+        }
     }
 
 

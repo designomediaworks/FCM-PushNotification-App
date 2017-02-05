@@ -26,12 +26,38 @@ public class IconTextDrawable extends Drawable {
     private final Paint paint;
     private final Bitmap bitmap;
     private final Context context;
+    private final float sizeX;
+    private final float sizeY;
+
+    private final float dp24;
 
     public IconTextDrawable(Context context, String text, int drawable) {
         this.context = context;
         this.text = text;
         this.bitmap = getBitmapFromVectorDrawable(context, drawable);
+        dp24 = DimensionConverter.stringToDimensionPixelSize("24dp", context.getResources().getDisplayMetrics());
 
+        this.paint = new Paint();
+        paint.setTextSize(22f);
+        paint.setAntiAlias(true);
+        paint.setFakeBoldText(true);
+        paint.setShadowLayer(6f, 0, 0, Color.BLACK);
+        paint.setStyle(Paint.Style.FILL);
+        paint.setTextAlign(Paint.Align.RIGHT);
+        sizeX = dp24;
+        sizeY = dp24;
+    }
+
+    public IconTextDrawable(Context context, String text, int drawable, float width, float height) {
+        dp24 = DimensionConverter.stringToDimensionPixelSize("24dp", context.getResources().getDisplayMetrics());
+
+        this.context = context;
+        this.text = text;
+        this.bitmap = getBitmapFromVectorDrawable(context, drawable);
+
+
+        this.sizeX = width;
+        this.sizeY = height;
         this.paint = new Paint();
         paint.setTextSize(22f);
         paint.setAntiAlias(true);
@@ -43,27 +69,30 @@ public class IconTextDrawable extends Drawable {
 
     @Override
     public void draw(Canvas canvas) {
-        int sizeX = -DimensionConverter.stringToDimensionPixelSize("18dp", context.getResources().getDisplayMetrics());
-        int sizeY = -DimensionConverter.stringToDimensionPixelSize("12dp", context.getResources().getDisplayMetrics());
+        float sizeX = (this.sizeX - dp24) / 2f;
 
-        canvas.drawBitmap(bitmap, sizeX, sizeY, paint);
-        paint.setColor(Color.RED);
+        float sizeY = (this.sizeY - dp24) / 2f;
+
+        canvas.drawBitmap(bitmap, (float) Math.floor(sizeX), sizeY, paint);
+        if (text!=null) {
+            paint.setColor(Color.RED);
 //        canvas.drawCircle(bitmap.getWidth()-6, bitmap.getHeight()/2-6, 12, paint);
-        paint.setColor(Color.YELLOW);
+            paint.setColor(Color.YELLOW);
 //        canvas.drawText(text, bitmap.getWidth(), bitmap.getHeight()/2, paint);
-        int textSize = DimensionConverter.stringToDimensionPixelSize("12sp", context.getResources().getDisplayMetrics());
-        int width = 25 + textSize * text.length() / 2;
-        TextDrawable drawable = TextDrawable.builder()
-                .beginConfig()
-                .textColor(Color.WHITE)
-                .useFont(Stylish.getInstance().bold(context))
-                .fontSize(textSize) /* size in px */
-                .bold()
-                .toUpperCase()
-                .endConfig()
-                .buildRoundRect(text, ContextCompat.getColor(context, R.color.colorDeepOrange_500), textSize);
-        canvas.drawBitmap(convertToBitmap(drawable, width, 25 + textSize / 3),
-                bitmap.getWidth() - width + sizeX, sizeY, paint);
+            float textSize = DimensionConverter.stringToDimension("12sp", context.getResources().getDisplayMetrics());
+            int width = (int) (textSize * text.length() + textSize / 2f);
+            TextDrawable drawable = TextDrawable.builder()
+                    .beginConfig()
+                    .textColor(Color.WHITE)
+                    .useFont(Stylish.getInstance().bold(context))
+                    .fontSize((int) textSize) /* sizeX in px */
+                    .bold()
+                    .toUpperCase()
+                    .endConfig()
+                    .buildRoundRect(text, ContextCompat.getColor(context, R.color.colorDeepOrange_500), (int) textSize);
+            canvas.drawBitmap(convertToBitmap(drawable, width, (int) (textSize * 1.5f)),
+                    bitmap.getWidth() - width * 2 / 3 + sizeX, sizeY * 2 / 3, paint);
+        }
 //        bitmap.draw(canvas);
     }
 
